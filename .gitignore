@@ -1,0 +1,6 @@
+node_modules/
+# Вход в аккаунт Microsoft, настройки, история и логи — только локально
+data/
+.idea/
+.claude/
+*.tmp

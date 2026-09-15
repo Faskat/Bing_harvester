@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bing Harvester</title>
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header class="top">
+    <img src="icon.png" alt="" class="logo">
+    <div class="brand">
+      <h1>Bing Harvester</h1>
+      <span id="version" class="muted"></span>
+    </div>
+    <div id="account" class="account" title=""></div>
+  </header>
+
+  <div id="offline" class="banner" hidden>Нет связи с приложением — переподключаюсь…</div>
+
+  <section id="onboarding" class="card hero" hidden>
+    <h2>Войдите в аккаунт Microsoft</h2>
+    <p>Откроется отдельное окно Edge. Войдите как обычно и отметьте «Оставаться в системе» — окно закроется само. Пароль приложение не видит и не хранит.</p>
+    <div class="hero-actions">
+      <button id="loginBtn" class="primary big">Войти в Microsoft</button>
+      <button id="cancelLoginBtn" class="ghost" hidden>Отмена</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="run-head">
+      <div class="run-text">
+        <h2 id="runTitle">Загрузка…</h2>
+        <p id="runSub" class="muted"></p>
+      </div>
+      <button id="runBtn" class="primary big" data-action="run" disabled>Собрать баллы</button>
+    </div>
+    <ol id="steps" class="steps" hidden></ol>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <div>
+        <h2>Каждый день</h2>
+        <p id="scheduleSub" class="muted"></p>
+      </div>
+      <label class="switch" title="Запускать по расписанию">
+        <input type="checkbox" id="scheduleOn">
+        <span></span>
+      </label>
+    </div>
+    <label class="row sub">
+      <span>Время запуска</span>
+      <input type="time" id="scheduleTime" value="10:00">
+    </label>
+  </section>
+
+  <details class="card" id="settingsCard">
+    <summary><h2>Настройки</h2></summary>
+    <div class="fields">
+      <label class="field">
+        <span>Скорость</span>
+        <select data-setting="speed">
+          <option value="fast">Быстро</option>
+          <option value="normal">Обычно</option>
+          <option value="slow">Медленно</option>
+          <option value="stealth">Очень медленно</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Язык Bing</span>
+        <select data-setting="lang">
+          <option value="ru">Русский</option>
+          <option value="uk">Українська</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+
+      <label class="check"><input type="checkbox" data-setting="daily">
+        <span>Ежедневный набор<small>3 задания в день</small></span></label>
+      <label class="check"><input type="checkbox" data-setting="quiz">
+        <span>Отвечать на викторины и опросы<small>ответы выбираются случайно</small></span></label>
+      <label class="check"><input type="checkbox" data-setting="search">
+        <span>2 поиска для дневной серии<small>до лимита в 60 баллов не добивает — так безопаснее</small></span></label>
+      <label class="check"><input type="checkbox" data-setting="clicks">
+        <span>Иногда открывать результаты поиска<small>как делают люди</small></span></label>
+      <label class="check"><input type="checkbox" data-setting="more">
+        <span>Дополнительные задания<small>если на панели появятся задания с баллами</small></span></label>
+      <label class="check"><input type="checkbox" data-setting="claim">
+        <span>Забирать «Готово к получению»<small>неполученные баллы через месяц сгорают</small></span></label>
+      <label class="check"><input type="checkbox" data-setting="showBrowser">
+        <span>Показывать окно браузера<small>видно, что делает бот</small></span></label>
+    </div>
+  </details>
+
+  <details class="card" id="logCard">
+    <summary><h2>Журнал</h2></summary>
+    <ul id="history" class="history"></ul>
+    <pre id="log" class="log"></pre>
+    <div class="actions">
+      <button id="checkBtn">Проверить вход</button>
+      <button id="reloginBtn">Войти заново</button>
+      <button id="logsBtn">Папка логов</button>
+    </div>
+  </details>
+
+  <p class="disclaimer">Автоматизация нарушает правила Microsoft Rewards — аккаунт могут ограничить. Используйте на свой риск.</p>
+</main>
+<div id="toast" class="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
