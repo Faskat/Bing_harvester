@@ -1,0 +1,21 @@
+{
+  "name": "bing-harvester",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Маленькое приложение для Windows: ежедневный набор, серия и баллы Microsoft Rewards через Edge",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/app.mjs",
+    "once": "node src/run.mjs",
+    "login": "node src/run.mjs --login",
+    "check": "node src/run.mjs --check",
+    "setup": "node src/setup.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "1.63.0"
+  }
+}
