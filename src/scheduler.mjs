@@ -28,9 +28,13 @@ function Stamp($d) { if ($d -and $d.Year -gt 2000) { $d.ToString('o') } else { $
 
 export async function installSchedule(time) {
   if (!/^\d{2}:\d{2}$/.test(time)) throw new Error(`Неверное время: ${time}`);
-  const launcher = path.join(ROOT, 'Bing Harvester.vbs');
+  // Из сборки Bing Harvester.exe передаёт свой путь; из исходников запускаем через VBS
+  const exe = process.env.BH_LAUNCHER;
+  const execute = exe ?? 'wscript.exe';
+  const argument = exe ? '--scheduled' : `"${path.join(ROOT, 'Bing Harvester.vbs')}" --scheduled`;
+  const workdir = exe ? path.dirname(exe) : ROOT;
   await powershell(`
-$action = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument ${psQuote(`"${launcher}" --scheduled`)} -WorkingDirectory ${psQuote(ROOT)}
+$action = New-ScheduledTaskAction -Execute ${psQuote(execute)} -Argument ${psQuote(argument)} -WorkingDirectory ${psQuote(workdir)}
 $trigger = New-ScheduledTaskTrigger -Daily -At ${psQuote(time)} -RandomDelay (New-TimeSpan -Minutes ${RANDOM_DELAY_MIN})
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Hours 2)
 Register-ScheduledTask -TaskName ${psQuote(TASK_NAME)} -Action $action -Trigger $trigger -Settings $settings -Description ${psQuote(`Bing Harvester: ежедневные баллы Microsoft Rewards (${ROOT})`)} -Force | Out-Null`);

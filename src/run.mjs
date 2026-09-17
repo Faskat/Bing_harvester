@@ -44,7 +44,7 @@ async function run() {
   if (rec.result === 'ok') saveAccount({ loggedIn: true, balance: rec.balanceAfter ?? rec.balanceBefore });
   if (rec.result === 'login') {
     saveAccount({ loggedIn: false });
-    log(`${rec.error}. Войдите заново: кнопка «Войти» в окне или node src/run.mjs --login`);
+    log(`${rec.error}. Войдите заново: откройте Bing Harvester и нажмите «Войти в Microsoft»`);
   }
   return { ok: 0, error: 1, login: 2, stopped: 3 }[rec.result];
 }
