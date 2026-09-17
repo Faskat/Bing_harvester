@@ -13,7 +13,8 @@
     "once": "node src/run.mjs",
     "login": "node src/run.mjs --login",
     "check": "node src/run.mjs --check",
-    "setup": "node src/setup.mjs"
+    "setup": "node src/setup.mjs",
+    "build": "node scripts/build.mjs"
   },
   "dependencies": {
     "playwright-core": "1.63.0"
