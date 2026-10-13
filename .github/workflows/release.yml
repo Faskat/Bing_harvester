@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: windows-latest
@@ -28,10 +32,29 @@ jobs:
         with:
           name: BingHarvester-win-x64
           path: dist/*.zip
+          if-no-files-found: error
 
-      - name: Create release
+      # A published asset is immutable: rebuilding on a newer runner can change
+      # the bundled Node executable. Reruns keep existing ZIPs and only fill gaps.
+      # https://cli.github.com/manual/gh_release_upload
+      - name: Publish release once
         if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --title "Bing Harvester $GITHUB_REF_NAME" --generate-notes
+        run: |
+          set -euo pipefail
+          assets=(dist/*.zip)
+          test -f "${assets[0]}"
+          releases=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" --paginate --jq '.[].tag_name')
+          if ! grep -Fxq -- "$GITHUB_REF_NAME" <<< "$releases"; then
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "Bing Harvester $GITHUB_REF_NAME" --generate-notes
+          fi
+          existing=$(gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets[].name')
+          for asset in "${assets[@]}"; do
+            if grep -Fxq -- "$(basename "$asset")" <<< "$existing"; then
+              echo "Already published: $(basename "$asset")"
+            else
+              gh release upload "$GITHUB_REF_NAME" "$asset"
+            fi
+          done
