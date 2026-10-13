@@ -1,6 +1,7 @@
 """Exercise the workflow's actual shell block with a fake gh command."""
 from pathlib import Path
 import os
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -26,6 +27,26 @@ gh() {
 '''
 
 
+def bash_executable():
+    if os.name == "nt":
+        # The Windows system bash launcher can select an unconfigured WSL.
+        # Use the Git Bash interpreter that also runs the release workflow.
+        git = shutil.which("git")
+        candidates = []
+        if git:
+            candidates.append(Path(git).resolve().parents[1] / "bin/bash.exe")
+        candidates.append(Path(os.environ.get("ProgramFiles", "C:/Program Files"))
+                          / "Git/bin/bash.exe")
+        for candidate in candidates:
+            if candidate.is_file():
+                return str(candidate)
+        raise RuntimeError("Git Bash is required for the Windows release tests")
+    bash = shutil.which("bash")
+    if not bash:
+        raise RuntimeError("Bash is required for the release tests")
+    return bash
+
+
 class ReleaseTests(unittest.TestCase):
     def run_release(self, **settings):
         with tempfile.TemporaryDirectory() as temp:
@@ -33,7 +54,7 @@ class ReleaseTests(unittest.TestCase):
             assets.mkdir()
             (assets / "app.zip").write_bytes(b"fixture")
             env = dict(os.environ, GITHUB_REPOSITORY="owner/repo", GITHUB_REF_NAME="v1", **settings)
-            return subprocess.run(["bash", "-s"], input=MOCK + SCRIPT,
+            return subprocess.run([bash_executable(), "-s"], input=MOCK + SCRIPT,
                                   cwd=temp, env=env, text=True, capture_output=True)
 
     def test_first_release(self):
